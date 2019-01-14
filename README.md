@@ -1,2 +1,2 @@
 # inforadar
-A tool for collecting site info 
+A tool for collecting website info.
