@@ -28,4 +28,4 @@ if __name__ == '__main__' :
     res = Public_HeaderInfo(param_domain)
 
     # get all second domain and create thread pool to scan them all
-    Public_SecDoamainIn(param_domain, res)
+    Public_SecDomainIn(param_domain, res)
