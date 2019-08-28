@@ -1,6 +1,6 @@
 #coding=utf-8
 #Time : 2019-01-21
-__auther__ = 'n00b\'*'
+__author__ = 'dynamic program security team'
 __version__ = '1.0.2'
 
 #from socket import *
@@ -8,7 +8,6 @@ __version__ = '1.0.2'
 import os
 import re
 import sys
-import time
 import socket
 import requests
 import subprocess
@@ -43,10 +42,10 @@ def Public_GetIP(domain) :
 
 
 
-# HeaderInfo to get domain Header's info
-# Created by Nerium at 2019/01/21
-# Modify by Nerium at 2019/03/05
-def Public_HeaderInfo(domain) :
+# Response to get response
+# Created by Nerium at 2019/08/28
+# Modify by Nerium at 2019/08/28
+def Public_Response(domain) :
     
     if domain == '' :
         return ''
@@ -62,12 +61,28 @@ def Public_HeaderInfo(domain) :
             get_response = requests.get(url, timeout=2)
         except :
             print(red___b + '[!]Can\'t Create 5ocket With This Domain. Please Check It.' + color_e)
-            return ''
+            get_response = ''
+    
+    return get_response
+
+
+
+# HeaderInfo to get domain Header's info
+# Created by Nerium at 2019/01/21
+# Modify by Nerium at 2019/08/28
+def Public_HeaderInfo(domain) :
+
+    get_response = Public_Response(domain)
 
     get_ip = Public_GetIP(domain)
-    get_header = get_response.headers
+    
+    try :
+        get_header = get_response.headers
+    except :
+        return [get_ip, 'HIDDEN', 'HIDDEN']
+    
     print(redddiing + 'Created 5ocket & Got IP & Got Header Info Yet.')
-    use_cdn = 'NO'
+    use_cdn = 'HIDDEN'
 
     # Check response header to confirm CDN and use proxy to check it...
     print(greenning + 'Detecting CDN...', end='\r')
@@ -79,6 +94,8 @@ def Public_HeaderInfo(domain) :
 
     if 'canonical' in nsl_res_str :
         use_cdn = 'YES'
+    else :
+        use_cdn = 'NO'
     print(redddiing + 'Detected CDN State : {}.'.format(use_cdn))
 
     # Log website server info
@@ -89,30 +106,41 @@ def Public_HeaderInfo(domain) :
         get_server = 'HIDDEN'
     print(redddiing + 'Detected Server State : {}.'.format(get_server))
 
-    return get_response;
+    res = []
+    res.append(get_ip)
+    res.append(get_server)
+    res.append(use_cdn)
+
+    return res
 
 
 
-# Get second domain by recompile and create thread pool to scan all web
+# Get second domain by recompile
 # Created by Nerium at 2019/02/04
-# Modify by Nerium at 2019/03/05
-def Public_SecDomainIn(domain, response) :
+# Modify by Nerium at 2019/08/28
+def Public_SecDomainIn(domain, response, flag = False) :
 
     if domain == '' or response == '' :
         return ''
     
     print(greenning + 'Searching Second Domains', end='\r')
     
-    split_domain_str = domain.split('.');
+    split_domain_str = domain.split('.')
     domain_str = '\w[-\w.+]*'
     for i in range(1,len(split_domain_str)) :
         domain_str = domain_str + '\.' + split_domain_str[i]
-    regx = re.compile(domain_str);
+    regx = re.compile(domain_str)
 
     regx_res = regx.findall(response.text)
     regx_res.append(domain)
     
-    fin_res = list(set(regx_res))
-    print(redddiing + 'Found ' + str(len(fin_res)) + ' Domains Totally Include Original Domain.')
+    fin_res = set(regx_res)
+    if flag :
+        fin_res.remove(domain)
+    fin_res = list(fin_res)
 
+    if flag :
+        print(redddiing + 'Found ' + str(len(fin_res)) + ' Domains Totally Don\'t Include Original Domain.')
+    else :
+        print(redddiing + 'Found ' + str(len(fin_res)) + ' Domains Totally Include Original Domain.')
     return fin_res
